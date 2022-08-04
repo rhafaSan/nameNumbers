@@ -1,68 +1,4 @@
-const single = {
-    0: 'zero',
-    1: 'um',
-    2: 'dois',
-    3: 'três',
-    4: 'quatro',
-    5: 'cinco',
-    6: 'seis',
-    7: 'sete',
-    8: 'oito',
-    9: 'nove'
-}
-
-const unidade = {
-    11: 'onze',
-    12: 'doze',
-    13: 'treze',
-    14: 'quatorze',
-    15: 'quinze',
-    16: 'dezesseis',
-    17: 'dezessete',
-    18: 'dezoito',
-    19: 'dezenove'
-}
-
-const dezenas = {
-    10: 'dez',
-    20: 'vinte',
-    30: 'trinta',
-    40: 'quarenta',
-    50: 'cinquenta',
-    60: 'sessenta',
-    70: 'setenta',
-    80: 'oitenta',
-    90: 'noventa'
-}
-
-const centenas = {
-    100: 'cem',
-    200: 'duzentos',
-    300: 'trezentos',
-    400: 'quatrocentos',
-    500: 'quinhetos',
-    600: 'seiscentos',
-    700: 'setecentos',
-    800: 'oitocentos',
-    900: 'novecentos'
-}
-
-const milhar = {
-    1000: 'mil'
-}
-
-const numerosMenoresQueDez = {
-    0: 'zero',
-    1: 'one',
-    2: 'two',
-    3: 'three',
-    4: 'four',
-    5: 'five',
-    6: 'six',
-    7: 'seven',
-    8: 'eight',
-    9: 'nine',
-  };
+const { centenas, unidade, dezenas, milhar, numerosMenoresQueDez, single } = require('./Unidades')
 
 function menorQueDez(num){
     return numerosMenoresQueDez[num];
@@ -80,6 +16,14 @@ function verificarSingles(num){
     return single[num];
 }
 
+function verificarCentena(num){
+    return centenas[num];
+}
+
+function verificarMilhar(num){
+    return milhar[num];
+}
+
 function textoDezena(num, value){
     if(num < 10) return verificarSingles(num);
 
@@ -87,18 +31,42 @@ function textoDezena(num, value){
 
     const newValue = value.toString();
     const prevValue = newValue.slice(-1)
+    const novaDezena = newValue.substr(0,1)
     
-
-    console.log(`Value: ${typeof(newValue)}`);
-    console.log(`Anterior: ${prevValue}`);
-
-
-    const dezena = verificarDezenas(newValue);
+    const dezena = verificarDezenas(novaDezena.concat('0'));
     const resto =  verificarSingles(prevValue);
 
-    return prevValue == 0 ? `${dezena}` : `${dezena} ${resto}`
+    return prevValue == 0 ? `${dezena}` : `${dezena} e ${resto}`
     
 }
 
+function textoCentena(value){
+    const primeiro = value.toString();
+    
+    const centena = primeiro.substr(0, 1);
+    const dezenas = primeiro.substr(1,2);
 
-console.log(textoDezena('50', 50));
+    let textoPrimeiro = `${verificarCentena(centena.concat('00'))}`
+
+    if(textoPrimeiro === 'cem') textoPrimeiro = 'cento'
+    const resto = primeiro.substr(1);
+    // console.log(resto);
+    
+    const dezena = textoDezena(resto, resto);
+
+    return dezenas === '00' ? `${textoPrimeiro}` : `${textoPrimeiro} e ${dezena}`
+}
+
+function textoMilhar(value){
+    const valueString = value.toString();
+    const milhar = valueString.substr(0, 1);
+    const centena = valueString.substr(1, 3);
+
+    const textoDaMilhar = `${verificarSingles(milhar)} mil`
+    const textoDaCentena = `${textoCentena(centena)}`
+
+    return centena === '000' ? `${textoDaMilhar}` : `${textoDaMilhar} ${textoDaCentena}`
+
+}
+
+console.log(textoMilhar(1111));
